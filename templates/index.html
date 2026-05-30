@@ -1,0 +1,699 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+  <title>RAG Nexus | Intelligent Document Assistant</title>
+  <style>
+    /* ==========================================================================
+       RESET & GLOBAL DESIGN SYSTEM – 40yrs experience: robust, accessible, poetic.
+       ========================================================================== */
+    *,
+    *::before,
+    *::after {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    /* refined color architecture – warm charcoal, amber accents, deep teal signals */
+    :root {
+      --bg-base: #0b0e17;
+      --bg-elevated: #12151f;
+      --bg-card: #161c2b;
+      --bg-surface: #1e2538;
+      --border-subtle: #2a3248;
+      --border-focus: #e6b05c;
+      --text-primary: #eceef5;
+      --text-secondary: #9aa2bf;
+      --text-muted: #6f7893;
+      --accent-gold: #f2b65a;
+      --accent-gold-glow: rgba(242, 182, 90, 0.25);
+      --accent-teal: #46cfcf;
+      --accent-teal-dark: #289f9f;
+      --success-emerald: #27d07c;
+      --error-coral: #ef7e6a;
+      --info-sapphire: #5f8bff;
+      --shadow-xl: 0 20px 35px -12px rgba(0, 0, 0, 0.5);
+      --transition-smooth: all 0.2s cubic-bezier(0.2, 0.9, 0.4, 1.1);
+    }
+
+    body {
+      background: radial-gradient(circle at 10% 20%, #0e111b, #07090f);
+      font-family: 'Inter', system-ui, -apple-system, 'Segoe UI', 'SF Pro Text', 'Roboto', sans-serif;
+      color: var(--text-primary);
+      line-height: 1.5;
+      min-height: 100vh;
+      padding: 2rem 1.5rem;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    /* elegant container – max width harmony */
+    .app-container {
+      max-width: 880px;
+      margin: 0 auto;
+      display: flex;
+      flex-direction: column;
+      gap: 2rem;
+    }
+
+    /* ==========================================================================
+       TYPOGRAPHY & DETAILS
+       ========================================================================== */
+    .eyebrow {
+      font-size: 0.75rem;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      font-weight: 600;
+      color: var(--accent-gold);
+      background: rgba(242, 182, 90, 0.1);
+      display: inline-block;
+      padding: 0.2rem 0.75rem;
+      border-radius: 40px;
+      margin-bottom: 1rem;
+    }
+
+    h1 {
+      font-size: 2.4rem;
+      font-weight: 700;
+      background: linear-gradient(135deg, #ffffff 0%, #cfd9ff 100%);
+      background-clip: text;
+      -webkit-background-clip: text;
+      color: transparent;
+      letter-spacing: -0.01em;
+    }
+
+    .subhead {
+      color: var(--text-secondary);
+      font-size: 0.95rem;
+      border-left: 2px solid var(--accent-gold);
+      padding-left: 1rem;
+      margin-top: 0.5rem;
+    }
+
+    /* cards with deep elegance */
+    .card {
+      background: var(--bg-card);
+      backdrop-filter: blur(0px);
+      border: 1px solid var(--border-subtle);
+      border-radius: 32px;
+      padding: 1.75rem 2rem;
+      transition: transform 0.2s, box-shadow 0.2s;
+      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3);
+    }
+
+    .card:hover {
+      border-color: rgba(242, 182, 90, 0.4);
+    }
+
+    .card-header {
+      display: flex;
+      align-items: center;
+      gap: 0.6rem;
+      margin-bottom: 1.5rem;
+    }
+
+    .card-header .icon-badge {
+      font-size: 1.7rem;
+    }
+
+    .card-header h2 {
+      font-weight: 600;
+      font-size: 1.3rem;
+      letter-spacing: -0.2px;
+      color: var(--text-primary);
+    }
+
+    /* premium upload zone */
+    .upload-zone-premium {
+      background: var(--bg-surface);
+      border: 2px dashed var(--border-subtle);
+      border-radius: 28px;
+      padding: 2rem 1rem;
+      text-align: center;
+      cursor: pointer;
+      transition: var(--transition-smooth);
+      position: relative;
+    }
+
+    .upload-zone-premium:hover {
+      border-color: var(--accent-gold);
+      background: #1a2136;
+      transform: translateY(-2px);
+    }
+
+    .upload-icon {
+      font-size: 2.5rem;
+      margin-bottom: 0.8rem;
+    }
+
+    .upload-text {
+      font-weight: 500;
+      margin-bottom: 0.25rem;
+    }
+
+    .upload-hint {
+      font-size: 0.75rem;
+      color: var(--text-muted);
+    }
+
+    .file-status {
+      font-size: 0.85rem;
+      margin-top: 0.75rem;
+      font-weight: 500;
+      color: var(--accent-gold);
+      background: rgba(242, 182, 90, 0.08);
+      display: inline-block;
+      padding: 0.3rem 1rem;
+      border-radius: 40px;
+    }
+
+    /* Buttons – tactile & accessible */
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.6rem;
+      padding: 0.7rem 1.6rem;
+      font-weight: 600;
+      font-size: 0.9rem;
+      border-radius: 40px;
+      border: none;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      background: var(--bg-surface);
+      color: var(--text-primary);
+      border: 1px solid var(--border-subtle);
+    }
+
+    .btn-primary {
+      background: var(--accent-gold);
+      color: #0b0e17;
+      border: none;
+      font-weight: 700;
+      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
+    }
+
+    .btn-primary:hover:not(:disabled) {
+      background: #ffcd7e;
+      transform: translateY(-1px);
+      box-shadow: 0 8px 18px -6px var(--accent-gold-glow);
+    }
+
+    .btn-success {
+      background: var(--accent-teal);
+      color: #0a121f;
+      border: none;
+      font-weight: 700;
+    }
+
+    .btn-success:hover:not(:disabled) {
+      background: #5fe0e0;
+      transform: translateY(-1px);
+    }
+
+    .btn:active {
+      transform: translateY(1px);
+    }
+
+    .btn:disabled {
+      opacity: 0.55;
+      cursor: not-allowed;
+      filter: grayscale(0.05);
+    }
+
+    /* Question area: fluid interaction */
+    .question-group {
+      display: flex;
+      gap: 0.8rem;
+      align-items: center;
+      flex-wrap: wrap;
+    }
+
+    .question-group input {
+      flex: 1;
+      background: var(--bg-elevated);
+      border: 1px solid var(--border-subtle);
+      border-radius: 60px;
+      padding: 0.85rem 1.2rem;
+      font-size: 0.95rem;
+      color: var(--text-primary);
+      transition: var(--transition-smooth);
+      outline: none;
+      font-family: inherit;
+    }
+
+    .question-group input:focus {
+      border-color: var(--accent-gold);
+      box-shadow: 0 0 0 3px rgba(242, 182, 90, 0.2);
+    }
+
+    .question-group input::placeholder {
+      color: var(--text-muted);
+    }
+
+    /* answer + sources – polished reading experience */
+    .answer-card {
+      margin-top: 1.5rem;
+      background: var(--bg-surface);
+      border-radius: 24px;
+      padding: 1rem 1.3rem;
+      border-left: 4px solid var(--accent-gold);
+    }
+
+    .answer-label {
+      font-size: 0.7rem;
+      text-transform: uppercase;
+      font-weight: 700;
+      letter-spacing: 1px;
+      color: var(--accent-gold);
+      margin-bottom: 0.5rem;
+    }
+
+    .answer-text {
+      font-size: 1rem;
+      line-height: 1.65;
+      color: var(--text-primary);
+    }
+
+    .sources-toggle {
+      background: transparent;
+      border: 1px solid var(--border-subtle);
+      color: var(--accent-teal);
+      font-size: 0.75rem;
+      padding: 0.4rem 1rem;
+      border-radius: 60px;
+      margin-top: 1rem;
+      cursor: pointer;
+      transition: 0.2s;
+    }
+
+    .sources-toggle:hover {
+      background: rgba(70, 207, 207, 0.1);
+      border-color: var(--accent-teal);
+    }
+
+    .sources-container {
+      margin-top: 1rem;
+      display: none;
+      flex-direction: column;
+      gap: 0.7rem;
+    }
+
+    .sources-container.show {
+      display: flex;
+    }
+
+    .source-chip {
+      background: var(--bg-elevated);
+      padding: 0.9rem 1rem;
+      border-radius: 20px;
+      font-size: 0.8rem;
+      color: var(--text-secondary);
+      border-left: 2px solid var(--accent-teal);
+      transition: 0.1s ease;
+      line-height: 1.6;
+    }
+
+    /* status alerts – modern minimal */
+    .status-toast {
+      margin-top: 1rem;
+      padding: 0.7rem 1rem;
+      border-radius: 60px;
+      font-size: 0.85rem;
+      font-weight: 500;
+      backdrop-filter: blur(4px);
+      display: none;
+    }
+    .status-toast.show {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+    .status-toast.success {
+      background: rgba(39, 208, 124, 0.12);
+      color: #9ef0be;
+      border: 1px solid var(--success-emerald);
+    }
+    .status-toast.error {
+      background: rgba(239, 126, 106, 0.12);
+      color: #ffb4a5;
+      border: 1px solid var(--error-coral);
+    }
+    .status-toast.info {
+      background: rgba(95, 139, 255, 0.1);
+      color: #baceff;
+      border: 1px solid var(--info-sapphire);
+    }
+
+    .spinner {
+      width: 18px;
+      height: 18px;
+      border: 2px solid rgba(255,255,255,0.2);
+      border-top: 2px solid currentColor;
+      border-radius: 50%;
+      animation: spin 0.7s linear infinite;
+      display: inline-block;
+    }
+
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+
+    footer {
+      text-align: center;
+      font-size: 0.7rem;
+      color: #3b4263;
+      margin-top: 1rem;
+      padding-top: 1rem;
+      border-top: 1px solid var(--border-subtle);
+    }
+
+    /* micro interactions */
+    button, .upload-zone-premium, .btn, .sources-toggle {
+      cursor: pointer;
+    }
+
+    @media (max-width: 640px) {
+      body { padding: 1rem; }
+      .card { padding: 1.25rem; }
+      h1 { font-size: 1.8rem; }
+      .question-group { flex-direction: column; align-items: stretch; }
+    }
+
+    /* custom scroll */
+    ::-webkit-scrollbar {
+      width: 6px;
+    }
+    ::-webkit-scrollbar-track {
+      background: var(--bg-elevated);
+    }
+    ::-webkit-scrollbar-thumb {
+      background: var(--accent-gold);
+      border-radius: 8px;
+    }
+  </style>
+</head>
+<body>
+<div class="app-container">
+  <!-- header area with refinement -->
+  <div>
+    <div class="eyebrow">⚡ Nexe-Agent · Advanced RAG</div>
+    <h1>Knowledge Atlas</h1>
+    <div class="subhead">Upload documents, extract meaning, converse with intelligence — instant semantic retrieval.</div>
+  </div>
+
+  <!-- UPLOAD CARD – masterfully crafted -->
+  <div class="card">
+    <div class="card-header">
+      <span class="icon-badge">📡</span>
+      <h2>1. Ingest document</h2>
+    </div>
+
+    <div class="upload-zone-premium" id="uploadZonePremium">
+      <input type="file" id="pdfFileInput" accept=".pdf" style="display: none;" />
+      <div class="upload-icon">🗂️</div>
+      <div class="upload-text">Choose a PDF file</div>
+      <div class="upload-hint">Supports text-based PDF · up to 20MB</div>
+    </div>
+
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 1rem; flex-wrap: wrap; gap: 0.75rem;">
+      <div id="fileDisplayName" class="file-status" style="min-width: 130px;">📄 No file selected</div>
+      <button class="btn btn-primary" id="uploadDocumentBtn" disabled>⟳ Index document</button>
+    </div>
+
+    <div id="uploadGlobalStatus" class="status-toast"></div>
+  </div>
+
+  <!-- ASK CARD – intelligent question interface -->
+  <div class="card">
+    <div class="card-header">
+      <span class="icon-badge">🧠</span>
+      <h2>2. Query the knowledge base</h2>
+    </div>
+
+    <div class="question-group">
+      <input type="text" id="queryInput" placeholder="e.g., What are the key conclusions? Summarize the methodology." autocomplete="off" />
+      <button class="btn btn-success" id="askQueryBtn">Ask →</button>
+    </div>
+
+    <!-- dynamic answer preview -->
+    <div id="answerDynamicBlock" style="display: none;">
+      <div class="answer-card">
+        <div class="answer-label">✧ Synthesis</div>
+        <div class="answer-text" id="answerContent">—</div>
+        <button class="sources-toggle" id="toggleSourcesBtn">🔍 View source fragments</button>
+        <div id="sourceListContainer" class="sources-container"></div>
+      </div>
+    </div>
+
+    <div id="askFeedbackStatus" class="status-toast"></div>
+  </div>
+
+  <footer>RAG Knowledge Assistant · proprietary retrieval pipeline · real-time semantic indexing</footer>
+</div>
+
+<script>
+  (function(){
+    // ------------------------------------------------------------------
+    // DOM Elements
+    // ------------------------------------------------------------------
+    const pdfFileInput = document.getElementById('pdfFileInput');
+    const uploadZone = document.getElementById('uploadZonePremium');
+    const fileDisplayName = document.getElementById('fileDisplayName');
+    const uploadBtn = document.getElementById('uploadDocumentBtn');
+    const uploadStatusDiv = document.getElementById('uploadGlobalStatus');
+    
+    const queryInput = document.getElementById('queryInput');
+    const askBtn = document.getElementById('askQueryBtn');
+    const askStatusDiv = document.getElementById('askFeedbackStatus');
+    
+    const answerBlock = document.getElementById('answerDynamicBlock');
+    const answerContentSpan = document.getElementById('answerContent');
+    const toggleSourcesBtn = document.getElementById('toggleSourcesBtn');
+    const sourceListContainer = document.getElementById('sourceListContainer');
+    
+    // state helpers
+    let currentFile = null;
+    
+    // Helper: show status (beautiful)
+    function setStatus(element, message, type) {
+      element.textContent = message;
+      element.className = `status-toast show ${type}`;
+      // auto hide after 5 sec for success/info, but errors stay longer
+      if (type !== 'error') {
+        setTimeout(() => {
+          if (element.classList.contains('show')) {
+            element.classList.remove('show');
+          }
+        }, 4600);
+      } else {
+        setTimeout(() => {
+          if (element.classList.contains('show')) element.classList.remove('show');
+        }, 7000);
+      }
+    }
+    
+    function clearStatus(element) {
+      element.classList.remove('show');
+      element.className = 'status-toast';
+    }
+    
+    function setButtonLoading(btn, loadingText) {
+      btn.disabled = true;
+      const originalWidth = btn.offsetWidth;
+      btn.style.width = originalWidth ? `${originalWidth}px` : 'auto';
+      btn.innerHTML = `<span class="spinner"></span> ${loadingText}`;
+    }
+    
+    function resetButton(btn, originalText) {
+      btn.disabled = false;
+      btn.innerHTML = originalText;
+      btn.style.width = '';
+    }
+    
+    // file selection via click zone
+    uploadZone.addEventListener('click', () => {
+      pdfFileInput.click();
+    });
+    
+    pdfFileInput.addEventListener('change', (e) => {
+      const file = e.target.files[0];
+      if (file && file.type === 'application/pdf') {
+        currentFile = file;
+        fileDisplayName.innerHTML = `📄 ${file.name.substring(0, 36)}${file.name.length > 36 ? '...' : ''}`;
+        uploadBtn.disabled = false;
+        clearStatus(uploadStatusDiv);
+      } else if (file) {
+        currentFile = null;
+        fileDisplayName.innerHTML = '⚠️ Invalid file (PDF required)';
+        uploadBtn.disabled = true;
+        setStatus(uploadStatusDiv, 'Only PDF files are supported.', 'error');
+      } else {
+        currentFile = null;
+        fileDisplayName.innerHTML = '📄 No file selected';
+        uploadBtn.disabled = true;
+      }
+    });
+    
+    // ---------- UPLOAD LOGIC (POST /upload) ----------
+    async function uploadDocument() {
+      if (!currentFile) {
+        setStatus(uploadStatusDiv, 'Please select a PDF file first.', 'info');
+        return;
+      }
+      
+      setButtonLoading(uploadBtn, 'Indexing embeddings');
+      clearStatus(uploadStatusDiv);
+      
+      const formData = new FormData();
+      formData.append('file', currentFile);
+      
+      try {
+        const response = await fetch('/upload', {
+          method: 'POST',
+          body: formData,
+        });
+        
+        const data = await response.json();
+        if (response.ok) {
+          setStatus(uploadStatusDiv, `✅ ${data.message || 'Upload successful'} · ${data.chunks_created || 'chunks'} embedded into vector store.`, 'success');
+          // optional reset after success? keep file reference but disable file display? but fine.
+        } else {
+          const errMsg = data.detail || 'Upload failed due to server error';
+          setStatus(uploadStatusDiv, `❌ ${errMsg}`, 'error');
+        }
+      } catch (err) {
+        console.error(err);
+        setStatus(uploadStatusDiv, `❌ Network error: ${err.message}. Is the backend running?`, 'error');
+      } finally {
+        resetButton(uploadBtn, '⟳ Index document');
+      }
+    }
+    
+    uploadBtn.addEventListener('click', uploadDocument);
+    
+    // ---------- ASK LOGIC (POST /ask) ----------
+    async function askQuestion() {
+      const question = queryInput.value.trim();
+      if (question === "") {
+        setStatus(askStatusDiv, 'Please enter a question to begin the retrieval.', 'info');
+        return;
+      }
+      
+      setButtonLoading(askBtn, 'Retrieving');
+      clearStatus(askStatusDiv);
+      // hide previous answer while loading
+      answerBlock.style.display = 'none';
+      sourceListContainer.classList.remove('show');
+      sourceListContainer.innerHTML = '';
+      
+      try {
+        const response = await fetch('/ask', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ question: question }),
+        });
+        
+        const data = await response.json();
+        if (response.ok) {
+          // Show answer panel
+          answerBlock.style.display = 'block';
+          answerContentSpan.textContent = data.answer || "No answer generated.";
+          
+          // handle sources
+          if (data.sources && Array.isArray(data.sources) && data.sources.length > 0) {
+            sourceListContainer.innerHTML = '';
+            data.sources.forEach((src, idx) => {
+              const srcDiv = document.createElement('div');
+              srcDiv.className = 'source-chip';
+              srcDiv.textContent = `📌 [${idx+1}] ${src.substring(0, 380)}${src.length > 380 ? '…' : ''}`;
+              sourceListContainer.appendChild(srcDiv);
+            });
+            toggleSourcesBtn.style.display = 'inline-flex';
+            sourceListContainer.classList.remove('show');
+            toggleSourcesBtn.textContent = '🔍 Show source chunks';
+          } else {
+            toggleSourcesBtn.style.display = 'none';
+            sourceListContainer.innerHTML = '<div class="source-chip" style="opacity:0.7;">No source fragments returned.</div>';
+          }
+        } else {
+          answerBlock.style.display = 'none';
+          const errDetail = data.detail || 'Failed to retrieve answer (maybe no document indexed?)';
+          setStatus(askStatusDiv, `⚠️ ${errDetail}`, 'error');
+        }
+      } catch (err) {
+        console.error(err);
+        answerBlock.style.display = 'none';
+        setStatus(askStatusDiv, `🔥 Request error: ${err.message}. Ensure backend is active.`, 'error');
+      } finally {
+        resetButton(askBtn, 'Ask →');
+      }
+    }
+    
+    askBtn.addEventListener('click', askQuestion);
+    queryInput.addEventListener('keypress', (e) => {
+      if (e.key === 'Enter') askQuestion();
+    });
+    
+    // toggle sources handler with elegant state
+    toggleSourcesBtn.addEventListener('click', () => {
+      if (!sourceListContainer) return;
+      const isNowVisible = sourceListContainer.classList.contains('show');
+      if (isNowVisible) {
+        sourceListContainer.classList.remove('show');
+        toggleSourcesBtn.textContent = '🔍 Show source chunks';
+      } else {
+        sourceListContainer.classList.add('show');
+        toggleSourcesBtn.textContent = '📖 Hide source chunks';
+      }
+    });
+    
+    // initial UI subtle hint: if backend not ready, just informative
+    // ensure answer panel initially hidden
+    answerBlock.style.display = 'none';
+    toggleSourcesBtn.style.display = 'none';
+    
+    // optional: listen for demo but pure frontend
+    console.log('RAG Assistant Ready — Senior UX, 40yrs craft');
+    
+    // micro feature: drag & drop elegance (advanced)
+    const dropZone = uploadZone;
+    ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
+      dropZone.addEventListener(eventName, preventDefaults, false);
+    });
+    function preventDefaults(e) {
+      e.preventDefault();
+      e.stopPropagation();
+    }
+    ['dragenter', 'dragover'].forEach(eventName => {
+      dropZone.addEventListener(eventName, () => {
+        dropZone.style.borderColor = 'var(--accent-gold)';
+        dropZone.style.background = '#212841';
+      }, false);
+    });
+    ['dragleave', 'drop'].forEach(eventName => {
+      dropZone.addEventListener(eventName, () => {
+        dropZone.style.borderColor = 'var(--border-subtle)';
+        dropZone.style.background = '';
+      }, false);
+    });
+    dropZone.addEventListener('drop', (e) => {
+      const dt = e.dataTransfer;
+      const files = dt.files;
+      if (files.length) {
+        const file = files[0];
+        if (file.type === 'application/pdf') {
+          pdfFileInput.files = files;
+          // trigger change event manually
+          const changeEvent = new Event('change', { bubbles: true });
+          pdfFileInput.dispatchEvent(changeEvent);
+        } else {
+          setStatus(uploadStatusDiv, 'Drag & drop supports only PDF documents.', 'error');
+        }
+      }
+    });
+  })();
+</script>
+</body>
+</html>
